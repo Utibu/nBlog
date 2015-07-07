@@ -1,0 +1,16 @@
+var LocalStrategy = require('passport-local').Strategy;
+
+//Load user model
+var user = require('../app/models/user');
+
+module.exports = function(passport) {
+	passport.serializeUser(function(user, done) {
+		done(null, user.id);
+	});
+
+	passport.deserializeUser(function(id, done) {
+		user.findById(id, function(err, user) {
+			done(err, user);
+		});
+	});
+}
