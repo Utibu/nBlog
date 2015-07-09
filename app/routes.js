@@ -1,11 +1,25 @@
 module.exports = function(app, passport) {
 
 	app.get('/', function(req, res) {
-		res.render('index', { title: 'Index' });
+		res.render('index', { title : 'Index' });
 	});
 
+	var api = require('../api/blog');
+
+	app.get('/createPost', isLoggedIn, function(req, res) {
+		var msg = req.flash('createPostMessage');
+		res.render('createPost.ejs', {
+			user : req.user,
+			title : 'Create post',
+			message : msg
+		})
+	})
+
+	app.post('/createPost', api.newPost);
+
 	app.get('/login', function(req, res) {
-		res.render('login', { message: req.flash('loginMessage') });
+		var msg = req.flash('loginMessage');
+		res.render('login', { message: msg });
 	});
 
 	app.post('/login', passport.authenticate('local-login', {
@@ -15,11 +29,12 @@ module.exports = function(app, passport) {
 	}));
 
 	app.get('/signup', function(req, res) {
-		res.render('signup.ejs', { message: req.flash('signupMessage'), title: 'Signup' });
+		var msg = req.flash('signupMessage');
+		res.render('signup.ejs', { message: msg, title: 'Signup' });
 	});
 
 	app.post('/signup', passport.authenticate('local-signup', {
-		successRedirect : '/profile',
+		successRedirect : '/administrate',
 		failureRedirect : '/signup',
 		failureFlash : true
 	}));
@@ -27,7 +42,7 @@ module.exports = function(app, passport) {
 	app.get('/administrate', isLoggedIn, function(req, res) {
 		res.render('administrate.ejs', {
 			user : req.user,
-			title: 'Administrate'
+			title : 'Administrate'
 		});
 	});
 

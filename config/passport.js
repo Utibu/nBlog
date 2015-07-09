@@ -15,26 +15,28 @@ module.exports = function(passport) {
 	});
 
 	passport.use('local-signup', new LocalStrategy({
-		usernameField: 'username',
+		usernameField: 'email',
 		passwordField: 'password',
 		passReqToCallback: true
 	},
-	function(req, username, password, done) {
+	function(req, email, password, done) {
 		process.nextTick(function() {
-			console.log('Kommer hit');
 
-			User.findOne({ 'local.username' : username }, function(err, user) {
+			User.findOne({ 'local.email' : email }, function(err, user) {
 
 				if (err)
 					return done(err);
 
 				if (user) {
-					return done(null, false, req.flash('signupMessage', 'That username is already taken.'));
+					return done(null, false, req.flash('signupMessage', 'That email is already taken.'));
 				} else {
 					var newUser = new User();
 
-					newUser.local.username = username;
+					newUser.local.email = email;
 					newUser.local.password = newUser.generateHash(password);
+					newUser.local.blogName = req.body.blogname;
+					// TODO: Set default timezone to GMT+1 (how?)
+					newUser.local.created = new Date().toISOString();
 
 					newUser.save(function(err) {
 						if (err)
@@ -49,13 +51,12 @@ module.exports = function(passport) {
 	}));
 
 	passport.use('local-login', new LocalStrategy({
-		usernameField : 'username',
+		usernameField : 'email',
 		passwordField : 'password',
 		passReqToCallback : true
 	},
-	function(req, username, password, done) {
-		console.log('Kommer hit');
-		User.findOne({ 'local.username' : username }, function(err, user) {
+	function(req, email, password, done) {
+		User.findOne({ 'local.email' : email }, function(err, user) {
 			if (err)
 				return done(err);
 
@@ -68,4 +69,4 @@ module.exports = function(passport) {
 			return done(null, user);
 		});
 	}));
-}
+};
