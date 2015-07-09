@@ -21,7 +21,7 @@ var bodyParser = require('body-parser');
 var logger = require('morgan');
 
 //Database
-var  configDB = require('./config/database.js');
+var configDB = require('./config/database.js');
 
 // ========= Configuration
 
@@ -33,9 +33,12 @@ require('./config/passport')(passport);
 
 //Express
 app.use(logger('dev'));
-app.use(cookieParser());
-app.use(bodyParser());
 app.set('view engine', 'ejs');
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({
+	extended : true
+}));
+app.use(express.static('public'));
 
 //Passport
 app.use(session({ secret: 'UnoDostr3sTEQUILA-SalsaTequila_AndersNilsen'}));
