@@ -8,10 +8,24 @@ module.exports = function(app, passport) {
 
 	app.get('/createPost', isLoggedIn, function(req, res) {
 		var msg = req.flash('createPostMessage');
+		var content = "";
+
+		console.log(req.session.content);
+
+		if (req.session.content) {
+			content = req.session.content;
+			console.log(content.content);
+		} else {
+			content = "";
+		}
+
+		// TODO: Clear the content session when leaving createPost (maybe)?
+
 		res.render('createPost.ejs', {
 			user : req.user,
 			title : 'Create post',
-			message : msg
+			message : msg,
+			storedContent : content
 		})
 	})
 

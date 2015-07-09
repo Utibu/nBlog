@@ -10,21 +10,21 @@ var post = require('../app/models/post');
 
 exports.newPost = function(req, res) {
 
-	// TODO: This does not render the custom flash messages as it should...
+	req.session.content = { 'content': req.body.content, 'title': req.body.title };
 
 	if (req.body.title.length < 1) {
-		res.render('createPost', {
-			message : req.flash('createPostMessage', "There is no title. This post would be as good as invincible without it!")
-		});
+		req.flash('createPostMessage', "There is no title. This post would be as good as invincible without it!")
+		res.redirect('/createPost');
 		return console.error('There is no title!');
 	}
 
 	if (req.body.content.length < 1) {
-		res.render('createPost', {
-			message : req.flash('createPostMessage', "You seem to lack some content. What would your readers read?")
-		});
+		req.flash('createPostMessage', "You seem to lack some content. What would your readers read?")
+		res.redirect('/createPost');
 		return console.error('There are no content!');
 	}
+
+	req.session.content = null;
 
 	new post({
 		userId : req.user.id,
@@ -34,7 +34,7 @@ exports.newPost = function(req, res) {
 	}).save(function (err) {
 		if (err) {
 			res.render('createPost', {
-				message : req.flash('createPostMessage', "Something went wrong, but it's nothing to do with your input.")
+				message : req.flash('createPostMessage', "Something went wrong, but it has nothing to do with your input.")
 			});
 			return console.error(err);
 		} 

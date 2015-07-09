@@ -20,6 +20,7 @@ module.exports = function(passport) {
 		passReqToCallback: true
 	},
 	function(req, email, password, done) {
+		console.log('Hej');
 		process.nextTick(function() {
 
 			User.findOne({ 'local.email' : email }, function(err, user) {
@@ -56,15 +57,25 @@ module.exports = function(passport) {
 		passReqToCallback : true
 	},
 	function(req, email, password, done) {
+		console.log('I am here m8');
 		User.findOne({ 'local.email' : email }, function(err, user) {
-			if (err)
+			console.log('Error here');
+			if (err) {
+				console.log('error');
 				return done(err);
 
-			if (!user)
-				return done(null, false, req.flash('loginMessage', 'No user found.'));
+			}
 
-			if (!user.validPassword(password))
+			if (!user) {
+				console.log('No user');
+				//req.flash('loginMessage', 'No user found.')
+				//req.flash('loginMessage', 'Oops! Wrong password.')
+				return done(null, false, req.flash('loginMessage', 'No user found.'));
+			}
+
+			if (!user.validPassword(password)) {
 				return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.'));
+			}
 
 			return done(null, user);
 		});

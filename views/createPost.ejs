@@ -2,26 +2,26 @@
 
     <h1><span class="fa fa-sign-in"></span> Create post</h1>
 
-    <% if (message.length > 0) { %>
+    <% 
+
+    var contentContent = storedContent.content;
+    console.log('Content in EJS: ' + contentContent);
+    var contentTitle = storedContent.title;
+
+    if (message.length > 0) { %>
         <div class="alert alert-danger"><%= message %></div>
     <% } %>
 
-    <!-- LOGIN FORM -->
     <form action="/createPost" method="post">
         <div class="form-group">
             <label>Title</label>
-            <input type="text" class="form-control" name="title">
+            <input type="text" class="form-control" name="title" value="<%= contentTitle %>">
         </div>
         <div class="form-group">
             <label>Content</label>
-            <input type="textarea" class="form-control" name="content">
+            <textarea class="form-control" name="content"><%= contentContent %></textarea>
         </div>
 
-        <button type="submit" class="btn btn-warning btn-lg">Login</button>
+        <button type="submit" class="btn btn-warning btn-lg">Create</button>
     </form>
-
-    <hr>
-
-    <p>Need an account? <a href="/signup">Signup</a></p>
-    <p>Or go <a href="/">home</a>.</p>
 <% include partials/footer.ejs %>
