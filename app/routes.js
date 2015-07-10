@@ -1,5 +1,18 @@
 module.exports = function(app, passport) {
 
+	app.use(function (req, res, next) {
+
+		var email = '';
+
+		if (req.user) {
+			email = req.user.local.email;
+		}
+
+	    res.locals = {
+		    email : email,
+	   	};
+	   	next();
+	});
 	app.get('/', function(req, res) {
 		res.render('index', { title : 'Index' });
 	});
@@ -8,7 +21,7 @@ module.exports = function(app, passport) {
 
 	app.get('/createPost', isLoggedIn, function(req, res) {
 		var msg = req.flash('createPostMessage');
-		var content = "";
+		var content = '';
 
 		console.log(req.session.content);
 
@@ -16,7 +29,7 @@ module.exports = function(app, passport) {
 			content = req.session.content;
 			console.log(content.content);
 		} else {
-			content = "";
+			content = '';
 		}
 
 		// TODO: Clear the content session when leaving createPost (maybe)?
@@ -44,7 +57,11 @@ module.exports = function(app, passport) {
 
 	app.get('/signup', function(req, res) {
 		var msg = req.flash('signupMessage');
-		res.render('signup.ejs', { message: msg, title: 'Signup' });
+		res.render('signup.ejs', { 
+			message : msg, 
+			title : 'Signup',
+			url : req.protocol + '://' + req.get('host')
+		});
 	});
 
 	app.post('/signup', passport.authenticate('local-signup', {

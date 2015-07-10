@@ -7,6 +7,7 @@ var userSchema = mongoose.Schema({
         email : String,
         password : String,
         blogName : String,
+        url : String,
         created : Date
     }
 

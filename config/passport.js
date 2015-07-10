@@ -36,6 +36,7 @@ module.exports = function(passport) {
 					newUser.local.email = email;
 					newUser.local.password = newUser.generateHash(password);
 					newUser.local.blogName = req.body.blogname;
+					newUser.local.url = req.body.url;
 					// TODO: Set default timezone to GMT+1 (how?)
 					newUser.local.created = new Date().toISOString();
 
