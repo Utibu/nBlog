@@ -42,6 +42,10 @@ module.exports = function(app, passport) {
 		})
 	})
 
+	app.get('/blog/:url', function(req, res) {
+		api.getEntries(req, res);
+	});
+
 	app.post('/createPost', api.newPost);
 
 	app.get('/login', function(req, res) {

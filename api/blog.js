@@ -1,12 +1,24 @@
 var post = require('../app/models/post');
+var user = require('../app/models/user');
 
-/*exports.getBlogEntriesList = function() {
-	blog.find(function(err, entries) {
-		if (err)
-			return console.error(err);
-		console.dir(entries);
+exports.getEntries = function(req, res) {
+	console.log('Requested url: ' + req.params.url);
+	user.findOne({ 'local.url': req.params.url }).exec(function(err, usr) {
+		if (err) throw err;
+
+	  	// show the admins in the past month
+		  	post.find({ userId: usr.id }).exec(function(err, pst) {
+			  if (err) throw err;
+			  console.log(pst);
+
+			  // show the one user
+			  console.log('Posts: ' + pst);
+			  res.render('blog', { posts : pst });
+			});
+	  	console.log('User: ' + usr._id);
 	});
-};*/
+	
+}
 
 exports.newPost = function(req, res) {
 
