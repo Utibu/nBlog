@@ -3,13 +3,16 @@ module.exports = function(app, passport) {
 	app.use(function (req, res, next) {
 
 		var email = '';
+		var url = '';
 
 		if (req.user) {
 			email = req.user.local.email;
+			url = req.user.local.url;
 		}
 
 	    res.locals = {
 		    email : email,
+		    url : url,
 	   	};
 	   	next();
 	});
@@ -45,6 +48,69 @@ module.exports = function(app, passport) {
 	app.get('/blog/:url', function(req, res) {
 		api.getEntries(req, res);
 	});
+
+	/*app.param('year', function(req, res, next, year) {
+		req.year = year;
+		next();
+	});
+
+	app.param('month', function(req, res, next, month) {
+		req.month = month;
+		next();
+	});
+
+	app.param('day', function(req, res, next, day) {
+		req.day = day;
+		next();
+	});
+
+	app.param('title', function(req, res, next, title) {
+		req.title = title;
+		next();
+	});
+
+	app.get('/blog/:year/:month/:year/:title', function(req, res) {
+		//Coming soon
+	});*/
+
+	app.param('blogUrl' , function(req, res, next, blogUrl) {
+		req.blogUrl = blogUrl;
+		next();
+	});
+
+	app.param('entryUrl' , function(req, res, next, entryUrl) {
+		req.entryUrl = entryUrl;
+		next();
+	});
+
+	app.get('/blog/:blogUrl/:entryUrl', function(req, res) {
+		api.getSingleEntry(req, res);
+	});
+
+	app.param('entryId', function(req, res, next, entryId) {
+		req.entryId = entryId;
+		console.log('EntryId: ' + req.entryId);
+		next();
+	});
+
+	app.param('handle', function(req, res, next, handle) {
+		req.handle = handle;
+		console.log('Handle: ' + req.handle);
+		next();
+	});
+
+	app.get('/blog/entry/:entryId/:handle', function(req, res) {
+		//console.log(req.entryId + req.handle);
+		res.render('index');
+	});
+
+	app.get('/blog/entry/:entryId', function(req, res) {
+		res.render('single');
+	})
+
+	/*app.get('/:url', function(req, res) {
+		api.getEntries(req, res);
+	});*/
 
 	app.post('/createPost', api.newPost);
 

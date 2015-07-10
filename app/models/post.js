@@ -9,6 +9,7 @@ var postSchema = mongoose.Schema({
 		},
 		title : String,
 		content : String,
+		url : String,
 		created : Date
 	
 });

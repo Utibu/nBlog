@@ -21,11 +21,51 @@ exports.getEntries = function(req, res) {
 			  }
 
 			  console.log('Posts: ' + pst);
-			  res.render('blog', { posts : pst });
+			  var userLoggedIn = 'no';
+			  if (req.isAuthenticated()) {
+			  	userLoggedIn = req.user._id;
+			  	console.log(userLoggedIn);
+			  }
+			  res.render('blog', { posts : pst, userid : userLoggedIn });
 			});
 	  	console.log('User: ' + usr._id);
 	});
 	
+}
+
+exports.getEntryByDate = function(req, res) {
+	var year = req.year;
+	var month = req.month;
+	var day = req.day;
+	var title = req.title;
+
+	var lookForDate = year + '-' + month + '-' + day;
+}
+
+exports.getSingleEntry = function(req, res) {
+	user.findOne({ 'local.url': req.params.blogUrl }).exec(function(err, usr) {
+		if (err) throw err;
+
+		if (!usr) {
+			res.render('error', { errorMsg : 'There are no blog with the url ' + req.params.url + '!' });
+			return console.error('There are no user');
+		}
+
+		post.findOne({ url: req.params.entryUrl, userId : usr._id }).exec(function(err, pst) {
+			console.log('Url: ' + req.params.blogUrl + ' UserId: ' + usr._id);
+			if (err) throw err;
+			console.log('Posts: ' + pst);
+			
+			if (!pst) {
+				res.render('error', { errorMsg : 'This blog has no entries.' });
+				return console.error('There are no entries');
+			}
+
+			res.render('single');
+
+
+		});
+	});
 }
 
 exports.newPost = function(req, res) {
@@ -45,11 +85,14 @@ exports.newPost = function(req, res) {
 	}
 
 	req.session.content = null;
+	var url = req.body.title;
+	var newUrl = url.replace(/\s/g, '-').toLowerCase();
 
 	new post({
 		userId : req.user.id,
 		title : req.body.title,
 		content : req.body.content,
+		url : newUrl,
 		created : new Date().toISOString()
 	}).save(function (err) {
 		if (err) {
