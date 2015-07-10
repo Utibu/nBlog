@@ -6,12 +6,20 @@ exports.getEntries = function(req, res) {
 	user.findOne({ 'local.url': req.params.url }).exec(function(err, usr) {
 		if (err) throw err;
 
-	  	// show the admins in the past month
+		if (!usr) {
+			res.render('error', { errorMsg : 'There are no blog with the url ' + req.params.url + '!' });
+			return console.error('There are no user');
+		}
+		console.log('Usr: ' + usr);
+
 		  	post.find({ userId: usr.id }).exec(function(err, pst) {
 			  if (err) throw err;
-			  console.log(pst);
+			  
+			  if (!pst) {
+			  	res.render('error', { errorMsg : 'This blog has no entries.' });
+				return console.error('There are no entries');
+			  }
 
-			  // show the one user
 			  console.log('Posts: ' + pst);
 			  res.render('blog', { posts : pst });
 			});
