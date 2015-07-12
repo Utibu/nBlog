@@ -4,7 +4,7 @@ if (!email) { %> <!-- Check if user is not logged in, display the "outside" menu
 	<li><a href="/login">Login</a></li>
 	<li><a href="/signup">Signup</a></li>
 <% } if (email) { %> <!-- Check if user is logged in, display menu for logged in user -->
-	<li><a href="/blog/<%= locals.url %>">Home</a></li>
+	<li><a href="/blog/<%= locals.superUrl %>">Home</a></li>
 	<li><a href="/administrate">Administrate</a></li>
 	<li><a href="/createPost">Create post</a></li>
 	<li><a href="/logout">Logout</a></li>

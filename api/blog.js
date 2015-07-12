@@ -12,7 +12,7 @@ exports.getEntries = function(req, res) {
 		}
 		console.log('Usr: ' + usr);
 
-		  	post.find({ userId: usr.id }).exec(function(err, pst) {
+		  	post.find({ userId: usr.id }).sort({created : 1}).exec(function(err, pst) {
 			  if (err) throw err;
 			  
 			  if (!pst) {
@@ -26,7 +26,7 @@ exports.getEntries = function(req, res) {
 			  	userLoggedIn = req.user._id;
 			  	console.log(userLoggedIn);
 			  }
-			  res.render('blog', { posts : pst, userid : userLoggedIn });
+			  res.render('blog', { posts : pst, userid : userLoggedIn, blogUrl : usr.local.url });
 			});
 	  	console.log('User: ' + usr._id);
 	});
@@ -40,6 +40,62 @@ exports.getEntryByDate = function(req, res) {
 	var title = req.title;
 
 	var lookForDate = year + '-' + month + '-' + day;
+}
+
+exports.saveEntry = function(req, res) {
+	console.log('Inside exports.saveEntry ' + req.user.local._id);
+	var query = {
+		'userId' : req.user._id,
+		'url' : req.entryUrl
+	};
+	var title = req.body.title;
+	var content = req.body.content;
+	var newUrl = req.body.url.replace(/\s/g, '-').toLowerCase();
+
+	post.findOneAndUpdate(query, { title : title, content : content, url : newUrl }, {upsert:false}, function(err, doc){
+		console.log(doc);
+	    if (err) return res.send(500, { error: err });
+	    return res.render('success', { successMsg: 'Your entry was successfully saved!' });
+	});
+}
+
+exports.loadForm = function(req, res) {
+	var action = req.act;
+
+	post.findOne({ url: req.entryUrl, userId : req.user._id }).exec(function(err, pst) {
+	    if (err) throw err;
+	    console.log(pst);
+	    console.log(pst._id);
+	    console.log('URL: ' + pst.url);
+	  
+	    if (!pst) {
+	  		res.render('error', { errorMsg : 'This entry does not exist.' });
+			return console.error('This entry does not exist');
+	  	}
+
+		switch (action) {
+			case 'edit':
+				res.render('blog-entry_edit', { 
+					url : pst.url, 
+					content : pst.content, 
+					title : pst.title, 
+					baseUrl : req.protocol + '://' + req.get('host') + '/blog/' + req.blogUrl + '/' 
+				} );
+				break;
+			case 'delete':
+				res.render('error', { errorMsg: 'Delete' } );
+				break;
+			case 'save':
+				res.render('error', { errorMsg: 'Save' } );
+				break;
+			default:
+				res.render('error', { errorMsg: 'There are no action called ' + req.action } );
+				break;
+		}
+
+	});
+
+
 }
 
 exports.getSingleEntry = function(req, res) {
@@ -107,4 +163,8 @@ exports.newPost = function(req, res) {
 		});
 
 	});
+}
+
+function checkIfUserIdMatch(userid) {
+
 }

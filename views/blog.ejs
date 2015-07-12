@@ -7,7 +7,7 @@
 	<% 
 	console.log('Entry.userid: ' + entry.userId + ' | userid:' + userid);
 	if (entry.userId.toString() === userid.toString()) { console.log('true');
-	%>| <a href="/blog/entry/<%= entry.id.toString() %>/edit">Edit</a> <% } %></small>
+	%>| <a href="/blog/<%= blogUrl %>/<%= entry.url %>/edit">Edit</a> <% } %></small>
 <% }); %> 
 
 

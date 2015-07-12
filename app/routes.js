@@ -3,16 +3,16 @@ module.exports = function(app, passport) {
 	app.use(function (req, res, next) {
 
 		var email = '';
-		var url = '';
+		var superUrl = '';
 
 		if (req.user) {
 			email = req.user.local.email;
-			url = req.user.local.url;
+			superUrl = req.user.local.url;
 		}
 
 	    res.locals = {
 		    email : email,
-		    url : url,
+		    superUrl : superUrl,
 	   	};
 	   	next();
 	});
@@ -87,24 +87,23 @@ module.exports = function(app, passport) {
 		api.getSingleEntry(req, res);
 	});
 
-	app.param('entryId', function(req, res, next, entryId) {
-		req.entryId = entryId;
-		console.log('EntryId: ' + req.entryId);
+	app.param('entryUrl' , function(req, res, next, entryUrl) {
+		req.entryUrl = entryUrl;
 		next();
 	});
 
-	app.param('handle', function(req, res, next, handle) {
-		req.handle = handle;
-		console.log('Handle: ' + req.handle);
+	app.param('act', function(req, res, next, act) {
+		req.act = act;
+		console.log('act: ' + req.act);
 		next();
 	});
 
-	app.get('/blog/entry/:entryId/:handle', function(req, res) {
-		//console.log(req.entryId + req.handle);
-		res.render('index');
+	app.get('/blog/:blogUrl/:entryUrl/:act', function(req, res) {
+		console.log('URL: ' + req.entryUrl);
+		api.loadForm(req, res);
 	});
 
-	app.get('/blog/entry/:entryId', function(req, res) {
+	app.get('/blog/:blogUrl/:entryId', function(req, res) {
 		res.render('single');
 	})
 
@@ -112,6 +111,7 @@ module.exports = function(app, passport) {
 		api.getEntries(req, res);
 	});*/
 
+	app.post('/blog/:blogUrl/:entryUrl/:act', api.saveEntry);
 	app.post('/createPost', api.newPost);
 
 	app.get('/login', function(req, res) {
@@ -150,6 +150,16 @@ module.exports = function(app, passport) {
 	app.get('/logout', function(req, res) {
 		req.logout();
 		res.redirect('/');
+	});
+
+	app.use(function(err, req, res, next) {
+	  	console.error(err.stack);
+	  	res.status(500).render('error', { errorMsg : 'Something broke. 500 error.' });
+	  	next();
+	});
+
+	app.use(function(req, res, next) {
+	  	res.status(404).render('error', { errorMsg : 'Unfortunately it has just occured a 404 error, which means that the page you are looking for does not exist.' });
 	});
 };
 
