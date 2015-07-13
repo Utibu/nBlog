@@ -1,6 +1,12 @@
 <% include partials/head.ejs %>
 
-<h1>Single entry</h1>
+<% var entry = post; %>
+	<h3><%= entry.title %></a></h3>
+	<p><%- entry.content %></p>
+	<small><%= entry.created %> 
+	<% 
+	if (entry.userId.toString() === userid.toString()) { console.log('true');
+	%>| <a href="/blog/<%= blogUrl %>/<%= entry.url %>/edit">Edit</a> <% } %></small>
 
 
 <% include partials/footer.ejs %>

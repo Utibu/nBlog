@@ -4,15 +4,18 @@ module.exports = function(app, passport) {
 
 		var email = '';
 		var superUrl = '';
+		var blogName = 'utiBlog'
 
 		if (req.user) {
 			email = req.user.local.email;
 			superUrl = req.user.local.url;
+			blogName = req.user.local.blogName;
 		}
 
 	    res.locals = {
 		    email : email,
 		    superUrl : superUrl,
+		    blogName : blogName,
 	   	};
 	   	next();
 	});
@@ -44,10 +47,6 @@ module.exports = function(app, passport) {
 			storedContent : content
 		})
 	})
-
-	app.get('/blog/:url', function(req, res) {
-		api.getEntries(req, res);
-	});
 
 	/*app.param('year', function(req, res, next, year) {
 		req.year = year;
@@ -83,19 +82,14 @@ module.exports = function(app, passport) {
 		next();
 	});
 
-	app.get('/blog/:blogUrl/:entryUrl', function(req, res) {
-		api.getSingleEntry(req, res);
-	});
-
-	app.param('entryUrl' , function(req, res, next, entryUrl) {
-		req.entryUrl = entryUrl;
-		next();
-	});
-
 	app.param('act', function(req, res, next, act) {
 		req.act = act;
 		console.log('act: ' + req.act);
 		next();
+	});
+
+	app.get('/blog/:url', function(req, res) {
+		api.getEntries(req, res);
 	});
 
 	app.get('/blog/:blogUrl/:entryUrl/:act', function(req, res) {
@@ -103,8 +97,8 @@ module.exports = function(app, passport) {
 		api.loadForm(req, res);
 	});
 
-	app.get('/blog/:blogUrl/:entryId', function(req, res) {
-		res.render('single');
+	app.get('/blog/:blogUrl/:entryUrl', function(req, res) {
+		api.getSingleEntry(req, res);
 	})
 
 	/*app.get('/:url', function(req, res) {

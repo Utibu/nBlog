@@ -1,8 +1,8 @@
 <% include partials/head.ejs %>
 
 <% posts.forEach(function(entry) { %>
-	<h3><%= entry.title %></h3>
-	<p><%= entry.content %></p>
+	<h3><a href="/blog/<%= blogUrl %>/<%= entry.url %>/"><%= entry.title %></a></h3>
+	<p><%- entry.content %></p>
 	<small><%= entry.created %> 
 	<% 
 	console.log('Entry.userid: ' + entry.userId + ' | userid:' + userid);

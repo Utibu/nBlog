@@ -49,7 +49,7 @@ exports.saveEntry = function(req, res) {
 		'url' : req.entryUrl
 	};
 	var title = req.body.title;
-	var content = req.body.content;
+	var content = req.body.content.replace(/\n/g, "<br />"); //Add more of these
 	var newUrl = req.body.url.replace(/\s/g, '-').toLowerCase();
 
 	post.findOneAndUpdate(query, { title : title, content : content, url : newUrl }, {upsert:false}, function(err, doc){
@@ -117,7 +117,14 @@ exports.getSingleEntry = function(req, res) {
 				return console.error('There are no entries');
 			}
 
-			res.render('single');
+			var userLoggedIn = 'no';
+
+			if (req.isAuthenticated()) {
+			  	userLoggedIn = req.user._id;
+			  	console.log(userLoggedIn);
+			}
+
+			return res.render('single', { post : pst, userid : userLoggedIn, blogUrl : req.blogUrl });
 
 
 		});
@@ -147,7 +154,7 @@ exports.newPost = function(req, res) {
 	new post({
 		userId : req.user.id,
 		title : req.body.title,
-		content : req.body.content,
+		content : req.body.content.replace(/\n/g, "<br />"), //Add more of these
 		url : newUrl,
 		created : new Date().toISOString()
 	}).save(function (err) {
