@@ -12,7 +12,7 @@ exports.getEntries = function(req, res) {
 		}
 		console.log('Usr: ' + usr);
 
-		  	post.find({ userId: usr.id }).sort({created : 1}).exec(function(err, pst) {
+		  	post.find({ userId: usr.id }).sort({created : -1}).exec(function(err, pst) {
 			  if (err) throw err;
 			  
 			  if (!pst) {

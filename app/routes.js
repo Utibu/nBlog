@@ -154,6 +154,11 @@ module.exports = function(app, passport) {
 
 	app.use(function(err, req, res, next) {
 	  	console.error(err.stack);
+
+	  	if (!req.isAuthenticated()) {
+	  		res.render('error', { errorMsg : 'Please log in to continue.' });
+	  	}
+
 	  	res.status(500).render('error', { errorMsg : 'Something broke. 500 error.' });
 	  	next();
 	});
