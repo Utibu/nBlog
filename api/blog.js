@@ -43,7 +43,6 @@ exports.getEntryByDate = function(req, res) {
 }
 
 exports.saveEntry = function(req, res) {
-	console.log('Inside exports.saveEntry ' + req.user.local._id);
 	var query = {
 		'userId' : req.user._id,
 		'url' : req.entryUrl
@@ -53,9 +52,26 @@ exports.saveEntry = function(req, res) {
 	var newUrl = req.body.url.replace(/\s/g, '-').toLowerCase();
 
 	post.findOneAndUpdate(query, { title : title, content : content, url : newUrl }, {upsert:false}, function(err, doc){
-		console.log(doc);
 	    if (err) return res.send(500, { error: err });
 	    return res.render('success', { successMsg: 'Your entry was successfully saved!' });
+	});
+}
+
+exports.deleteEntry = function(req, res) {
+	var query = {
+		'userId' : req.user._id,
+		'url' : req.entryUrl
+	};
+
+	if (req.body.sure != 'sure') {
+		console.log('Whaaaa');
+		return res.render('error', { errorMsg : "The checkbox wasn't checked, your post is still alive!" } )
+	}
+
+	post.findOneAndRemove(query, function(err, doc){
+		console.log(doc);
+	    if (err) return res.send(500, { error: err });
+	    return res.render('success', { successMsg: 'Your entry was successfully removed!' });
 	});
 }
 
@@ -83,10 +99,11 @@ exports.loadForm = function(req, res) {
 				} );
 				break;
 			case 'delete':
-				res.render('error', { errorMsg: 'Delete' } );
-				break;
-			case 'save':
-				res.render('error', { errorMsg: 'Save' } );
+				res.render('blog-entry_delete', { 
+					url : pst.url, 
+					title : pst.title, 
+					baseUrl : req.protocol + '://' + req.get('host') + '/blog/' + req.blogUrl + '/' 
+				} );
 				break;
 			default:
 				res.render('error', { errorMsg: 'There are no action called ' + req.action } );

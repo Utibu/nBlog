@@ -99,13 +99,28 @@ module.exports = function(app, passport) {
 
 	app.get('/blog/:blogUrl/:entryUrl', function(req, res) {
 		api.getSingleEntry(req, res);
-	})
+	});
 
 	/*app.get('/:url', function(req, res) {
 		api.getEntries(req, res);
 	});*/
 
-	app.post('/blog/:blogUrl/:entryUrl/:act', api.saveEntry);
+	app.post('/blog/:blogUrl/:entryUrl/:act', function(req, res) {
+		switch (req.act) {
+		case 'update':
+			api.saveEntry(req, res);
+			break;
+		case 'delete':
+			api.deleteEntry(req, res);
+			break;
+		case 'save':
+			res.render('error', { errorMsg: 'Save' } );
+			break;
+		default:
+			res.render('error', { errorMsg: 'There are no action called ' + req.action } );
+			break;
+	}
+	});
 	app.post('/createPost', api.newPost);
 
 	app.get('/login', function(req, res) {

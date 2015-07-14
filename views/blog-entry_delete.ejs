@@ -1,0 +1,12 @@
+<% include partials/head.ejs %>
+			
+<h3><%= title %></h3>
+<p>Are you sure you would like to delete this post?</p>
+
+<form action="<%= baseUrl %><%= url %>/delete" method="post">
+	<input type="checkbox" name="sure" value="sure"> <label for="sure">I'm sure that after I delete this post there wil be no way to return it!</label><br /><br />
+    <button type="submit" class="btn btn-warning btn-lg">I'm sure!</button>
+</form>
+
+
+<% include partials/footer.ejs %>
