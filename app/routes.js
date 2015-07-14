@@ -19,13 +19,38 @@ module.exports = function(app, passport) {
 	   	};
 	   	next();
 	});
-	app.get('/', function(req, res) {
-		res.render('index', { title : 'Index' });
-	});
 
 	var api = require('../api/blog');
 
-	app.get('/createPost', isLoggedIn, function(req, res) {
+	app.param('blogUrl' , function(req, res, next, blogUrl) {
+		req.blogUrl = blogUrl;
+		next();
+	});
+
+	app.param('entryUrl' , function(req, res, next, entryUrl) {
+		req.entryUrl = entryUrl;
+		next();
+	});
+
+	app.param('act', function(req, res, next, act) {
+		req.act = act;
+		console.log('act: ' + req.act);
+		next();
+	});
+
+	app.get('/', function(req, res) {
+		
+		if (req.user) {
+			console.log('BLOG');
+			return res.redirect('/blog/' + req.user.local.url);
+		}
+		console.log('Index');
+		res.render('index', { title : 'Index' });
+		
+		
+	});
+
+		app.get('/createPost', isLoggedIn, function(req, res) {
 		var msg = req.flash('createPostMessage');
 		var content = '';
 
@@ -46,46 +71,6 @@ module.exports = function(app, passport) {
 			message : msg,
 			storedContent : content
 		})
-	})
-
-	/*app.param('year', function(req, res, next, year) {
-		req.year = year;
-		next();
-	});
-
-	app.param('month', function(req, res, next, month) {
-		req.month = month;
-		next();
-	});
-
-	app.param('day', function(req, res, next, day) {
-		req.day = day;
-		next();
-	});
-
-	app.param('title', function(req, res, next, title) {
-		req.title = title;
-		next();
-	});
-
-	app.get('/blog/:year/:month/:year/:title', function(req, res) {
-		//Coming soon
-	});*/
-
-	app.param('blogUrl' , function(req, res, next, blogUrl) {
-		req.blogUrl = blogUrl;
-		next();
-	});
-
-	app.param('entryUrl' , function(req, res, next, entryUrl) {
-		req.entryUrl = entryUrl;
-		next();
-	});
-
-	app.param('act', function(req, res, next, act) {
-		req.act = act;
-		console.log('act: ' + req.act);
-		next();
 	});
 
 	app.get('/blog/:url', function(req, res) {
@@ -123,18 +108,18 @@ module.exports = function(app, passport) {
 	});
 	app.post('/createPost', api.newPost);
 
-	app.get('/login', function(req, res) {
+	app.get('/login', notLoggedIn, function(req, res) {
 		var msg = req.flash('loginMessage');
 		res.render('login', { message: msg });
 	});
 
-	app.post('/login', passport.authenticate('local-login', {
+	app.post('/login', notLoggedIn, passport.authenticate('local-login', {
 		successRedirect : '/administrate',
 		failureRedirect : '/login',
 		failureFlash : true
 	}));
 
-	app.get('/signup', function(req, res) {
+	app.get('/signup', notLoggedIn, function(req, res) {
 		var msg = req.flash('signupMessage');
 		res.render('signup.ejs', { 
 			message : msg, 
@@ -143,7 +128,7 @@ module.exports = function(app, passport) {
 		});
 	});
 
-	app.post('/signup', passport.authenticate('local-signup', {
+	app.post('/signup', notLoggedIn, passport.authenticate('local-signup', {
 		successRedirect : '/administrate',
 		failureRedirect : '/signup',
 		failureFlash : true
@@ -179,6 +164,13 @@ module.exports = function(app, passport) {
 
 function isLoggedIn(req, res, next) {
 	if (req.isAuthenticated())
+		return next()
+
+	res.redirect('/');
+}
+
+function notLoggedIn(req, res, next) {
+	if (!req.isAuthenticated())
 		return next()
 
 	res.redirect('/');

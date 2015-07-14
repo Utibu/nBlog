@@ -6,7 +6,7 @@
 	<small><%= entry.created %> 
 	<% 
 	if (entry.userId.toString() === userid.toString()) { console.log('true');
-	%>| <a href="/blog/<%= blogUrl %>/<%= entry.url %>/edit">Edit</a> <% } %></small>
+	%>| <a href="/blog/<%= blogUrl %>/<%= entry.url %>/edit">Edit</a> | <a href="/blog/<%= blogUrl %>/<%= entry.url %>/delete">Delete</a> <% } %></small>
 
 
 <% include partials/footer.ejs %>

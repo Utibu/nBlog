@@ -182,9 +182,7 @@ exports.newPost = function(req, res) {
 			return console.error(err);
 		} 
 
-		res.render('index', {
-			title : 'Index'
-		});
+		res.redirect('/');
 
 	});
 }
